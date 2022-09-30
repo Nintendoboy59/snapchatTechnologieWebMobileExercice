@@ -1,18 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
-  const SignIn({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const SignIn({super.key});
 
   @override
   State<SignIn> createState() => _SignIn();
@@ -21,22 +10,7 @@ class SignIn extends StatefulWidget {
 class _SignIn extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(""),
-        backgroundColor: Colors.white,
-        centerTitle: true,
-      ),
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -93,28 +67,6 @@ class _SignIn extends State<SignIn> {
           ),
         ),
       ),
-      floatingActionButton: GestureDetector(
-        onTap: () {
-          print('Connexion');
-        },
-        child: Container(
-          height: 55,
-          width: 260,
-          decoration: BoxDecoration(
-              color: Colors.blue, borderRadius: BorderRadius.circular(50)),
-          child: const Center(
-            child: Text(
-              'Connexion',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
