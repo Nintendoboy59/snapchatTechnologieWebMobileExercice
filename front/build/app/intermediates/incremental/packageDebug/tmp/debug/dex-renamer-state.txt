@@ -1,4 +1,4 @@
-#Fri Sep 23 17:59:51 CEST 2022
+#Fri Sep 30 07:58:03 CEST 2022
 base.0=C\:\\dev\\snapchatTechnologieWebMobileExercice\\front\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
 renamed.0=classes.dex
 path.0=classes.dex
