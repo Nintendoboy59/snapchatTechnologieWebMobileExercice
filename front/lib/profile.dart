@@ -15,8 +15,8 @@ class _ProfileState extends State<Profile> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(
-          children: const [
-            Padding(
+          children: [
+            const Padding(
               padding: EdgeInsets.only(top: 50.0),
               child: Center(
                 child: CircleAvatar(
@@ -25,7 +25,7 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(top: 10.0),
               child: Center(
                 child: Text('Jenny',
@@ -34,7 +34,7 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
             ),
-            Center(
+            const Center(
               child:Text('jenny98.12',
                 style: TextStyle(fontFamily: 'Montserrat',
                     fontWeight: FontWeight.w600,fontSize: 18),
@@ -46,13 +46,22 @@ class _ProfileState extends State<Profile> {
                 height: 50,
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text('Ajouter un ami',
-                    style: TextStyle(fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.w600,fontSize: 15),),
+                  child: Row(
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.only(left: 8.0,right: 20),
+                        child: Icon(Icons.add_reaction_outlined),
+                      ),
+                      Text('Ajouter un ami',
+                        style: TextStyle(fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.w600,fontSize: 15),),
+                      Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
                 ),
               ) ,
             ),
-            Card(
+            const Card(
               child: SizedBox(
                 width: 350,
                 height: 50,
