@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapchat_technologie_web_mobile_exercice/SignIn.dart';
-
-import 'Login.dart';
-import 'SignUp.dart';
+import 'Page/Login/Login.dart';
 
 void main() {
   runApp(const MyApp());

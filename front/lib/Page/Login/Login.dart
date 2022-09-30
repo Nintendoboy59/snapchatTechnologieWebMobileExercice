@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapchat_technologie_web_mobile_exercice/SignIn.dart';
-
+import 'SignIn.dart';
 import 'SignUp.dart';
 
 class Login extends StatefulWidget {
