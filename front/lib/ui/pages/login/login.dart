@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'SignIn.dart';
-import 'SignUp.dart';
+import 'sign_in.dart';
+import 'sign_up.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.title});
