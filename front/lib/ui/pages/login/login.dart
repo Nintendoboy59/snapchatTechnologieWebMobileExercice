@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../home/home_page.dart';
 import 'sign_in.dart';
 import 'sign_up.dart';
 
@@ -104,7 +105,9 @@ class _MyHomePageState extends State<Login> {
         ],
       ) : GestureDetector(
         onTap: () {
-          print(_title[_pageIndex]);
+          Navigator.push(context,MaterialPageRoute(builder: (BuildContext context){
+            return const MyHomePage();
+          }));
         },
         child: Container(
           height: 55,

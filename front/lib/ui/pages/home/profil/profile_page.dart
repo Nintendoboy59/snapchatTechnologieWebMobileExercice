@@ -20,7 +20,7 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: EdgeInsets.only(top: 50.0),
               child: Center(
                 child: CircleAvatar(
-                  backgroundImage: NetworkImage('https://e7.pngegg.com/pngimages/482/584/png-clipart-bitstrips-snapchat-nose-millennials-eye-bitmoji-face-payment.png'),
+                  backgroundImage: NetworkImage('https://rickandmortyapi.com/api/character/avatar/1.jpeg'),
                   radius: 50,
                 ),
               ),
