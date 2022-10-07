@@ -47,6 +47,7 @@ class _MessagePageState extends State<MessagePage> {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
                         return ChatPage(
+                            index: index,
                             image: character[index].image!,
                             name: character[index].name!);
                       }));

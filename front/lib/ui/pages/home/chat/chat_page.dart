@@ -1,109 +1,166 @@
 import 'package:flutter/material.dart';
-import 'package:snapchat_technologie_web_mobile_exercice/ui/pages/home/camera/camera_page.dart';
-import 'package:snapchat_technologie_web_mobile_exercice/ui/pages/home/map/map_page.dart';
-import 'package:snapchat_technologie_web_mobile_exercice/ui/pages/home/message/message_page.dart';
-import 'package:snapchat_technologie_web_mobile_exercice/ui/pages/home/profil/profile_page.dart';
-import 'package:snapchat_technologie_web_mobile_exercice/ui/pages/home/settings/settings_page.dart';
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final List<Widget> _pages = [
-    const MapPage(),
-    const MessagePage(),
-    const CameraPage(),
-    const SettingsPage(),
-    const ProfilePage()
-  ];
-  int _selectedindex = 0;
-  MaterialColor _navBarItemColor = Colors.green;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: WillPopScope(
-        onWillPop: () async => false,
-        child: Scaffold(
-          appBar: _selectedindex == 1
-              ? AppBar(
-                  leading: Padding(
-                      padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            'https://rickandmortyapi.com/api/character/avatar/1.jpeg'),
-                        radius: 50,
-                      )),
-                  title: Row(children: const <Widget>[
-                    Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Colors.grey,
-                            child: IconButton(
-                              onPressed: (null),
-                              icon: Icon(
-                                Icons.search,
-                                color: Colors.black,
-                                size: 24.0,
-                                semanticLabel:
-                                    'Text to announce in accessibility modes',
-                              ),
-                            ))),
-                    Text("Chat",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.w900,
-                            fontSize: 25))
-                  ]),
-                  backgroundColor: Colors.white,
-                  centerTitle: true,
-                  actions: [
-                    Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Colors.grey,
-                            child: IconButton(
-                              onPressed: (null),
-                              icon: Icon(
-                                Icons.person_add,
-                                color: Colors.black,
-                                size: 24.0,
-                                semanticLabel:
-                                    'Text to announce in accessibility modes',
-                              ),
-                            )))
-                  ],
-                )
-              : null,
-          body: _pages[_selectedindex],
-        ),
-      ),
-    );
-    ;
-  }
-}
-
-class  extends StatelessWidget {
-  const ({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
+import 'package:chat_bubbles/chat_bubbles.dart';
 
 class ChatPage extends StatelessWidget {
-  const ChatPage({Key? key, this.character}) : super(key: key);
-  final Result character;
+  const ChatPage({
+    super.key,
+    required this.index,
+    required this.image,
+    required this.name,
+  });
+
+  final int? index;
+  final String? image;
+  final String? name;
+
   @override
   Widget build(BuildContext context) {
-  return Container();
+    DateTime now = DateTime.now();
+    List<MyMessageItem> items = List<MyMessageItem>.generate(
+        50,
+        (i) => i % 6 == 0
+            ? MyMessageItem(
+                date: now, sender: true, body: 'Je t\'envoie un message ')
+            : MyMessageItem(date: now, sender: false, body: 'Je te repond'));
+
+    return Scaffold(
+      appBar: AppBar(
+        leadingWidth: 100,
+        automaticallyImplyLeading: true,
+        leading: Row(
+          children: const [
+            Padding(
+                padding: EdgeInsets.all(5.0),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(
+                      'https://rickandmortyapi.com/api/character/avatar/1.jpeg'),
+                )),
+            Padding(
+                padding: EdgeInsets.all(5.0),
+                child: CircleAvatar(
+                    backgroundColor: Colors.grey,
+                    child: IconButton(
+                      onPressed: (null),
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.black,
+                        size: 24.0,
+                        semanticLabel:
+                            'Text to announce in accessibility modes',
+                      ),
+                    ))),
+          ],
+        ),
+        title: const Text("Chat",
+            style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900,
+                fontSize: 25)),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        actions: const [
+          Padding(
+              padding: EdgeInsets.all(5.0),
+              child: CircleAvatar(
+                  backgroundColor: Colors.grey,
+                  child: IconButton(
+                    onPressed: (null),
+                    icon: Icon(
+                      Icons.person_add,
+                      color: Colors.black,
+                      size: 24.0,
+                      semanticLabel: 'Text to announce in accessibility modes',
+                    ),
+                  )))
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(64.0),
+          child: Card(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                (Padding(
+                    padding: EdgeInsets.all(5),
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(image!),
+                      radius: 25,
+                    ))),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(name!,
+                          style: TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.w900,
+                              fontSize: 12)),
+                      SizedBox(height: 10),
+                      Text("Nouveau Snap",
+                          style: TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.w900,
+                              fontSize: 12))
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        reverse: true,
+        child: Column(
+          children: <Widget>[
+            DateChip(
+              date: now,
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: items.length,
+              itemBuilder: (BuildContext context, int index) {
+                return items[index] ;
+              },
+            ),
+            SizedBox(
+              height: 95,
+            )
+          ],
+        ),
+      ),
+      floatingActionButton: MessageBar(
+        onSend: (_) => print(_),
+        messageBarColor: Colors.white,
+        replyCloseColor: Colors.grey,
+        replyWidgetColor: Colors.blue,
+        replying: false,
+        replyingTo: 'Coucou',
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+}
+
+class MyMessageItem extends StatelessWidget {
+  const MyMessageItem(
+      {super.key,
+      required this.date,
+      required this.sender,
+      required this.body});
+
+  final DateTime date;
+  final bool sender;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) => BubbleSpecialTwo(
+        text: body,
+        isSender: sender,
+        color: sender ? Color(0xFFE8E8EE) : Color(0xFF1B97F3),
+        sent: sender,
+      );
 }
