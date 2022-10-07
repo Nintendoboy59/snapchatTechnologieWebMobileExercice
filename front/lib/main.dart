@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'Page/Login/Login.dart';
+import 'package:snapchat_technologie_web_mobile_exercice/ui/pages/home/home_page.dart';
+import 'ui/pages/login/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Login(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
