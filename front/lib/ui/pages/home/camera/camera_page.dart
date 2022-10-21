@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,6 +19,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   VideoPlayerController? videoController;
   File? _imageFile;
   File? _videoFile;
+  int _pageIndex = 0;
 
   // Initial values
   bool _isCameraInitialized = false;
@@ -25,6 +27,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   bool _isRearCameraSelected = true;
   bool _isVideoCameraSelected = false;
   bool _isRecordingInProgress = false;
+  bool _isDDropDownSelected = false;
   double _minAvailableExposureOffset = 0.0;
   double _maxAvailableExposureOffset = 0.0;
   double _minAvailableZoom = 1.0;
@@ -293,13 +296,13 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: _isCameraPermissionGranted
-            ? isCameraPermissionGranted()
-            : isCameraPermissionNotGranted(),
-      ),
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: _isCameraPermissionGranted
+          ? isCameraPermissionGranted()
+          : isCameraPermissionNotGranted(),
+      floatingActionButton: bareLaterale(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
     );
   }
 
@@ -387,194 +390,38 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   }
 
   @override
-  Widget photoBare() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        InkWell(
-          onTap: _isVideoCameraSelected
-              ? () async {
-                  if (_isRecordingInProgress) {
-                    XFile? rawVideo = await stopVideoRecording();
-                    File videoFile = File(rawVideo!.path);
-
-                    int currentUnix = DateTime.now().millisecondsSinceEpoch;
-
-                    final directory = await getApplicationDocumentsDirectory();
-
-                    String fileFormat = videoFile.path.split('.').last;
-
-                    _videoFile = await videoFile.copy(
-                      '${directory.path}/$currentUnix.$fileFormat',
-                    );
-
-                    _startVideoPlayer();
-                  } else {
-                    await startVideoRecording();
-                  }
-                }
-              : () async {
-                  XFile? rawImage = await takePicture();
-                  File imageFile = File(rawImage!.path);
-
-                  int currentUnix = DateTime.now().millisecondsSinceEpoch;
-
-                  final directory = await getApplicationDocumentsDirectory();
-
-                  String fileFormat = imageFile.path.split('.').last;
-
-                  print(fileFormat);
-
-                  await imageFile.copy(
-                    '${directory.path}/$currentUnix.$fileFormat',
-                  );
-
-                  refreshAlreadyCapturedImages();
-                },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Icon(
-                Icons.circle,
-                color: _isVideoCameraSelected ? Colors.white : Colors.white38,
-                size: 80,
-              ),
-              Icon(
-                Icons.circle,
-                color: _isVideoCameraSelected ? Colors.red : Colors.white,
-                size: 65,
-              ),
-              _isVideoCameraSelected && _isRecordingInProgress
-                  ? Icon(
-                      Icons.stop_rounded,
-                      color: Colors.white,
-                      size: 32,
-                    )
-                  : Container(),
-            ],
-          ),
-        ),
-        InkWell(
-          onTap: _imageFile != null || _videoFile != null
-              ? () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PreviewScreen(
-                        imageFile: _imageFile!,
-                        fileList: allFileList,
-                      ),
-                    ),
-                  );
-                }
-              : null,
-          child: Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(10.0),
-              border: Border.all(
-                color: Colors.white,
-                width: 2,
-              ),
-              image: _imageFile != null
-                  ? DecorationImage(
-                      image: FileImage(_imageFile!),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
+  Widget body() {
+    List<Widget> _page = [
+      Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Container(
+            color: Colors.green,
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: CameraPreview(
+              controller!,
+              child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: (details) => onViewFinderTap(details, constraints),
+                );
+              }),
             ),
-            child:
-                videoController != null && videoController!.value.isInitialized
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: AspectRatio(
-                          aspectRatio: videoController!.value.aspectRatio,
-                          child: VideoPlayer(videoController!),
-                        ),
-                      )
-                    : Container(),
           ),
-        ),
-        InkWell(
-          onTap: _isRecordingInProgress
-              ? () async {
-            if (controller!.value.isRecordingPaused) {
-              await resumeVideoRecording();
-            } else {
-              await pauseVideoRecording();
-            }
-          }
-              : () async {
-            setState(() {
-              _isCameraInitialized = false;
-            });
-            onNewCameraSelected(_isRearCameraSelected
-                ? await _getCamera(0)
-                : await _getCamera(1));
-            setState(() {
-              _isRearCameraSelected = !_isRearCameraSelected;
-            });
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Icon(
-                Icons.circle,
-                color: Colors.black38,
-                size: 60,
-              ),
-              _isRecordingInProgress
-                  ? controller!.value.isRecordingPaused
-                  ? Icon(
-                Icons.play_arrow,
-                color: Colors.white,
-                size: 30,
-              )
-                  : Icon(
-                Icons.pause,
-                color: Colors.white,
-                size: 30,
-              )
-                  : Icon(
-                _isRearCameraSelected
-                    ? Icons.camera_front
-                    : Icons.camera_rear,
-                color: Colors.white,
-                size: 30,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+          photoBare()
+        ],
+      ),
+      CapturesScreen(),
+      PreviewScreen(),
+    ];
+    return _page[_pageIndex];
   }
 
   @override
   Widget isCameraPermissionGranted() {
-      return _isCameraInitialized
-          ? Stack(
-            children: [
-              Container(
-        color: Colors.green,
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: CameraPreview(
-            controller!,
-            child: LayoutBuilder(builder:
-                (BuildContext context, BoxConstraints constraints) {
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTapDown: (details) =>
-                    onViewFinderTap(details, constraints),
-              );
-            }),
-        ),
-      ),
-              photoBare()
-            ],
-          )
-          : Loding();
+    return _isCameraInitialized ? body() : Loding();
   }
 
   @override
@@ -611,6 +458,235 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   }
 
   @override
+  Widget bareLaterale() {
+    return _pageIndex != 0
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: Colors.black54,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: IconButton(
+                      onPressed: () async {
+                        setState(() {
+                          _pageIndex = 0;
+                        });
+                      },
+                      icon: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 24.0,
+                        semanticLabel:
+                            'Text to announce in accessibility modes',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: Colors.black54,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 9,
+                        ),
+                        IconButton(
+                          onPressed: _isRecordingInProgress
+                              ? () async {
+                                  if (controller!.value.isRecordingPaused) {
+                                    await resumeVideoRecording();
+                                  } else {
+                                    await pauseVideoRecording();
+                                  }
+                                }
+                              : () async {
+                                  setState(() {
+                                    _isCameraInitialized = false;
+                                  });
+                                  onNewCameraSelected(_isRearCameraSelected
+                                      ? await _getCamera(0)
+                                      : await _getCamera(1));
+                                  setState(() {
+                                    _isRearCameraSelected =
+                                        !_isRearCameraSelected;
+                                  });
+                                },
+                          icon: const Icon(
+                            Icons.sync,
+                            color: Colors.white,
+                            size: 24.0,
+                            semanticLabel:
+                                'Text to announce in accessibility modes',
+                          ),
+                        ),
+                        SizedBox(
+                          height: 9,
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            setState(() {
+                              _currentFlashMode =
+                                  _currentFlashMode == FlashMode.off
+                                      ? FlashMode.torch
+                                      : FlashMode.off;
+                              controller?.setFlashMode(_currentFlashMode!);
+                            });
+                          },
+                          icon: Icon(
+                            Icons.flash_on,
+                            color: _currentFlashMode == FlashMode.torch
+                                ? Colors.amberAccent
+                                : Colors.white,
+                            size: 24.0,
+                            semanticLabel:
+                                'Text to announce in accessibility modes',
+                          ),
+                        ),
+                        SizedBox(
+                          height: 9,
+                        ),
+                        _isDDropDownSelected
+                            ? resolusionMode()
+                            : IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isDDropDownSelected = true;
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.arrow_drop_down_circle_outlined,
+                                  color: Colors.white,
+                                  size: 24.0,
+                                  semanticLabel:
+                                      'Text to announce in accessibility modes',
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+  }
+
+  @override
+  Widget photoBare() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          IconButton(
+              onPressed: _imageFile != null || _videoFile != null
+                  ? () {
+                      setState(() {
+                        _pageIndex = 1;
+                      });
+                    }
+                  : null,
+              icon: Icon(CommunityMaterialIcons.cards_playing_outline,
+                  color: Colors.white, size: 28)),
+          SizedBox(width: 15),
+          GestureDetector(
+            onLongPress: () async {
+              _isVideoCameraSelected = true;
+              await startVideoRecording();
+            },
+            onLongPressCancel: () async {
+              if (_isRecordingInProgress) {
+                XFile? rawVideo = await stopVideoRecording();
+                File videoFile = File(rawVideo!.path);
+
+                int currentUnix = DateTime.now().millisecondsSinceEpoch;
+
+                final directory = await getApplicationDocumentsDirectory();
+
+                String fileFormat = videoFile.path.split('.').last;
+
+                _videoFile = await videoFile.copy(
+                  '${directory.path}/$currentUnix.$fileFormat',
+                );
+
+                _startVideoPlayer();
+                _isVideoCameraSelected = false;
+              }
+            },
+            onTap: () async {
+              XFile? rawImage = await takePicture();
+              File imageFile = File(rawImage!.path);
+
+              int currentUnix = DateTime.now().millisecondsSinceEpoch;
+
+              final directory = await getApplicationDocumentsDirectory();
+
+              String fileFormat = imageFile.path.split('.').last;
+
+              print(fileFormat);
+
+              await imageFile.copy(
+                '${directory.path}/$currentUnix.$fileFormat',
+              );
+
+              refreshAlreadyCapturedImages();
+
+              setState(() {
+                _pageIndex = 2;
+              });
+            },
+            child: Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      width: 7,
+                      color:
+                          _isVideoCameraSelected ? Colors.red : Colors.white)),
+            ),
+          ),
+          SizedBox(width: 15),
+          IconButton(
+              onPressed: () async {
+                setState(() {
+                  _isCameraInitialized = false;
+                });
+                onNewCameraSelected(_isRearCameraSelected
+                    ? await _getCamera(0)
+                    : await _getCamera(1));
+                setState(() {
+                  _isRearCameraSelected = !_isRearCameraSelected;
+                });
+              },
+              icon: Icon(CommunityMaterialIcons.sticker_emoji,
+                  color: Colors.white, size: 28)),
+        ],
+      ),
+    );
+  }
+
+  @override
   Widget resolusionMode() {
     return Align(
       alignment: Alignment.topRight,
@@ -642,6 +718,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
               setState(() {
                 currentResolutionPreset = value!;
                 _isCameraInitialized = false;
+                _isDDropDownSelected = false;
               });
               onNewCameraSelected(controller!.description);
             },
@@ -651,15 +728,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       ),
     );
   }
-}
-
-class CapturesScreen extends StatelessWidget {
-  final List<File> imageFileList;
-
-  const CapturesScreen({required this.imageFileList});
 
   @override
-  Widget build(BuildContext context) {
+  Widget CapturesScreen() {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
@@ -682,7 +753,7 @@ class CapturesScreen extends StatelessWidget {
               physics: NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               children: [
-                for (File imageFile in imageFileList)
+                for (File path in allFileList)
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -691,18 +762,14 @@ class CapturesScreen extends StatelessWidget {
                       ),
                     ),
                     child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => PreviewScreen(
-                              fileList: imageFileList,
-                              imageFile: imageFile,
-                            ),
-                          ),
-                        );
+                      onTap: () async {
+                        setState(() {
+                          _imageFile = path;
+                          _pageIndex = 2;
+                        });
                       },
                       child: Image.file(
-                        imageFile,
+                        path,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -714,48 +781,15 @@ class CapturesScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class PreviewScreen extends StatelessWidget {
-  final File imageFile;
-  final List<File> fileList;
-
-  const PreviewScreen({
-    required this.imageFile,
-    required this.fileList,
-  });
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => CapturesScreen(
-                      imageFileList: fileList,
-                    ),
-                  ),
-                );
-              },
-              child: Text('Go to all captures'),
-              style: TextButton.styleFrom(
-                primary: Colors.black,
-                backgroundColor: Colors.white,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Image.file(imageFile),
-          ),
-        ],
-      ),
+  Widget PreviewScreen() {
+    return Column(
+      children: [
+        Expanded(
+          child: Image.file(_imageFile!),
+        ),
+      ],
     );
   }
 }
