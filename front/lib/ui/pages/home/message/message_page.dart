@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:snapchat_technologie_web_mobile_exercice/ui/content/Loding.dart';
 import 'dart:convert' as convert;
 import '../../../../data/data.dart';
 import '../chat/chat_page.dart';
@@ -14,13 +16,13 @@ class MessagePage extends StatefulWidget {
 class _MessagePageState extends State<MessagePage> {
   Future<CharResponse?> _getChar() async {
     var url = Uri.parse('https://rickandmortyapi.com/api/character');
-
-    // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url);
     if (response.statusCode == 200) {
-      print(response.body);
+      if (kDebugMode) {
+        print(response.body);
+      }
       Map<String, dynamic> parseObject =
-          convert.jsonDecode(response.body) as Map<String, dynamic>;
+      convert.jsonDecode(response.body) as Map<String, dynamic>;
       return CharResponse.fromJson(parseObject);
     } else {
       return null;
@@ -31,78 +33,90 @@ class _MessagePageState extends State<MessagePage> {
   Widget build(BuildContext context) {
     return Center(
         child: FutureBuilder(
-      future: _getChar(),
-      builder: (BuildContext context, AsyncSnapshot<CharResponse?> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasData) {
-            if (snapshot.data != null) {
-              List<Results> character = snapshot.data!.results!;
+          future: _getChar(),
+          builder: (BuildContext context,
+              AsyncSnapshot<CharResponse?> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData &&
+                snapshot.data != null) {
+              List<Results> characters = snapshot.data!.results!;
               return ListView.builder(
                 primary: true,
                 shrinkWrap: true,
-                itemCount: character.length,
+                itemCount: characters.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return ChatPage(
-                            index: index,
-                            image: character[index].image!,
-                            name: character[index].name!);
-                      }));
-                    },
-                    child: Card(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.all(5),
-                            child: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(character[index].image!),
-                              radius: 25,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(character[index].name!,
-                                    style: TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 12)),
-                                SizedBox(height: 10),
-                                Text(
-                                  "Nouveau Snap",
-                                  style: TextStyle(
-                                      fontFamily: 'Montserrat',
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 12),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
+                  return CharacterCard(image:characters[index].image,name:characters[index].name,);
                 },
               );
             } else {
-              return Text('data null');
+              return const LodingCustom();
             }
-          } else {
-            return Text('data null');
-          }
-        } else {
-          return Text('data null');
-        }
-      },
-    ));
+          },
+        ));
   }
 }
+
+class CharacterCard extends StatelessWidget {
+  const CharacterCard({
+    super.key,
+    required this.image,
+    required this.name,
+  });
+
+  final String? image;
+  final String? name;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (BuildContext context) {
+              return ChatPage(
+                image: image,
+                name: name,);
+            }));
+      },
+      child: Card(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: CircleAvatar(
+                backgroundImage:
+                NetworkImage(image!),
+                radius: 25,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(name!,
+                      style: const TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.w900,
+                          fontSize: 12)),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Nouveau Snap",
+                    style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
