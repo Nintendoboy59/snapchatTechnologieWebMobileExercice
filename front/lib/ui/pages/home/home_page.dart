@@ -17,6 +17,75 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    List appBar = [
+      null,
+      AppBar(
+        leadingWidth: 100,
+        automaticallyImplyLeading: true,
+        leading: Row(
+          children: const [
+            Padding(
+                padding: EdgeInsets.all(5.0),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(
+                      'https://rickandmortyapi.com/api/character/avatar/1.jpeg'),
+                )),
+            Padding(
+                padding: EdgeInsets.all(5.0),
+                child: CircleAvatar(
+                    backgroundColor: Colors.grey,
+                    child: IconButton(
+                      onPressed: (null),
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.black,
+                        size: 24.0,
+                        semanticLabel:
+                            'Text to announce in accessibility modes',
+                      ),
+                    ))),
+          ],
+        ),
+        title: const Text("Chat",
+            style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900,
+                fontSize: 25)),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        actions: const [
+          Padding(
+              padding: EdgeInsets.all(5.0),
+              child: CircleAvatar(
+                  backgroundColor: Colors.grey,
+                  child: IconButton(
+                    onPressed: (null),
+                    icon: Icon(
+                      Icons.person_add,
+                      color: Colors.black,
+                      size: 24.0,
+                      semanticLabel: 'Text to announce in accessibility modes',
+                    ),
+                  )))
+        ],
+      ),
+      null,
+      AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () {
+            setState(() {
+              _selectedIndex = 0;
+            });
+          },
+        ),
+        title: const Text("Données de l'api", style: TextStyle(color: Colors.blue)),
+        backgroundColor: Colors.white,
+        centerTitle: false,
+      ),
+      null
+    ];
     List<Widget> pages = [
       const MapPage(),
       const MessagePage(),
@@ -27,68 +96,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: appBarCustom(),
+        appBar: appBar[_selectedIndex],
         body: pages[_selectedIndex],
         bottomNavigationBar: bottomNavBarCustom(),
       ),
     );
-  }
-
-  appBarCustom() {
-    return _selectedIndex == 1
-        ? AppBar(
-            leadingWidth: 100,
-            automaticallyImplyLeading: true,
-            leading: Row(
-              children: const [
-                Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(
-                          'https://rickandmortyapi.com/api/character/avatar/1.jpeg'),
-                    )),
-                Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: CircleAvatar(
-                        backgroundColor: Colors.grey,
-                        child: IconButton(
-                          onPressed: (null),
-                          icon: Icon(
-                            Icons.search,
-                            color: Colors.black,
-                            size: 24.0,
-                            semanticLabel:
-                                'Text to announce in accessibility modes',
-                          ),
-                        ))),
-              ],
-            ),
-            title: const Text("Chat",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.w900,
-                    fontSize: 25)),
-            backgroundColor: Colors.white,
-            centerTitle: true,
-            actions: const [
-              Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: CircleAvatar(
-                      backgroundColor: Colors.grey,
-                      child: IconButton(
-                        onPressed: (null),
-                        icon: Icon(
-                          Icons.person_add,
-                          color: Colors.black,
-                          size: 24.0,
-                          semanticLabel:
-                              'Text to announce in accessibility modes',
-                        ),
-                      )))
-            ],
-          )
-        : null;
   }
 
   bottomNavBarCustom() {
