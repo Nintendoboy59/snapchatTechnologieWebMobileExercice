@@ -10,8 +10,13 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('map page'),
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: FittedBox(
+        child: Image.asset('assets/images/mapPicture.png'),
+        fit: BoxFit.fill,
+      ),
     );
   }
 }
