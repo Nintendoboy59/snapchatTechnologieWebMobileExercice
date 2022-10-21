@@ -29,53 +29,56 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         appBar: _selectedindex == 1
             ? AppBar(
-                leading: Padding(
-                    padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(
-                          'https://rickandmortyapi.com/api/character/avatar/15.jpeg'),
-                      radius: 50,
-                    )),
-                title: Row(children: const <Widget>[
+                leadingWidth: 100,
+                automaticallyImplyLeading: true,
+                leading: Row(
+                  children: const [
+                    Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              'https://rickandmortyapi.com/api/character/avatar/1.jpeg'),
+                        )),
+                    Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            child: IconButton(
+                              onPressed: (null),
+                              icon: Icon(
+                                Icons.search,
+                                color: Colors.black,
+                                size: 24.0,
+                                semanticLabel:
+                                    'Text to announce in accessibility modes',
+                              ),
+                            ))),
+                  ],
+                ),
+                title: const Text("Chat",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.w900,
+                        fontSize: 25)),
+                backgroundColor: Colors.white,
+                centerTitle: true,
+                actions: const [
                   Padding(
-                      padding: EdgeInsets.all(10.0),
+                      padding: EdgeInsets.all(5.0),
                       child: CircleAvatar(
-                          radius: 22,
                           backgroundColor: Colors.grey,
                           child: IconButton(
                             onPressed: (null),
                             icon: Icon(
-                              Icons.search,
+                              Icons.person_add,
                               color: Colors.black,
                               size: 24.0,
                               semanticLabel:
                                   'Text to announce in accessibility modes',
                             ),
-                          ))),
-                  Text("Chat",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.w900,
-                          fontSize: 25))
-                ]),
-                backgroundColor: Colors.white,
-                centerTitle: true,
-                actions: [Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.grey,
-                        child: IconButton(
-                          onPressed: (null),
-                          icon: Icon(
-                            Icons.person_add,
-                            color: Colors.black,
-                            size: 24.0,
-                            semanticLabel:
-                            'Text to announce in accessibility modes',
-                          ),
-                        )))],
+                          )))
+                ],
               )
             : null,
         body: _pages[_selectedindex],

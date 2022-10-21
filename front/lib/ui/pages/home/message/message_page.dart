@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import '../../../../data/data.dart';
+import '../chat/chat_page.dart';
 
 class MessagePage extends StatefulWidget {
   const MessagePage({Key? key}) : super(key: key);
@@ -41,19 +42,30 @@ class _MessagePageState extends State<MessagePage> {
                 shrinkWrap: true,
                 itemCount: character.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return ChatPage(
+                            index: index,
+                            image: character[index].image!,
+                            name: character[index].name!);
+                      }));
+                    },
+                    child: Card(
                       child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                        (Padding(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
                             padding: EdgeInsets.all(5),
-                            child : CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(character[index].image!),
-                          radius: 25,
-                        ))),
-                        Padding(
+                            child: CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(character[index].image!),
+                              radius: 25,
+                            ),
+                          ),
+                          Padding(
                             padding: EdgeInsets.all(10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,14 +77,20 @@ class _MessagePageState extends State<MessagePage> {
                                         fontWeight: FontWeight.w900,
                                         fontSize: 12)),
                                 SizedBox(height: 10),
-                                Text("Nouveau Snap",
-                                    style: TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 12))
+                                Text(
+                                  "Nouveau Snap",
+                                  style: TextStyle(
+                                      fontFamily: 'Montserrat',
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 12),
+                                )
                               ],
-                            ))
-                      ]));
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
                 },
               );
             } else {
