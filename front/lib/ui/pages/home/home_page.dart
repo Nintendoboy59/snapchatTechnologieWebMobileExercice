@@ -16,7 +16,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> _pages = [
     const MapPage(),
     const MessagePage(),
-    const CameraPage(),
+    CameraPage(),
     const SettingsPage(),
     const ProfilePage()
   ];
