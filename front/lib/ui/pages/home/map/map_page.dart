@@ -12,45 +12,47 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: FittedBox(
-            child: Image.asset('assets/images/mapPicture.png'),
             fit: BoxFit.fill,
+            child: Image.asset('assets/images/mapPicture.png'),
           ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-                padding: const EdgeInsets.only(
-                  left: 0.0,
-                  right: 5.0,
-                  top: 10.0,
-                  bottom: 5.0,
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                  },
-                  child: Container(
-                    height: 55,
-                    width: 250,
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(50)),
-                    child: const Center(
-                      child: Text(
-                        'Trouve tes amis',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
+              padding: const EdgeInsets.all(64),
+              child: GestureDetector(
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (text) => const AlertDialog(
+                        title: Text('Si t\'as pas d\'amis prends un curly'),
+                      )
+                  );
+                },
+                child: Container(
+                  height: 55,
+                  width: 250,
+                  decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(50)),
+                  child: const Center(
+                    child: Text(
+                      'Trouve tes amis',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                )),
+                ),
+              ),
+            ),
           ],
         ),
       ],
